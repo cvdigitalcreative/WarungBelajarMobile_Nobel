@@ -1,0 +1,79 @@
+<resources>
+    <string name="app_name">Warung Belajar User</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="notif_pembayaran">Silahkan Melakukan Pembayaran Sebesar 30% dari Harga. Ke Rekening BCA
+        6175028238 A/n Muhammad Malian Zikri Bukti Pembayaran Harap Dikirimkan ke WA 08117199210
+    </string>
+
+    <string-array name="batch_list">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+
+    <string-array name="tipe_kursus">
+        <item>Grup</item>
+        <item>Private</item>
+    </string-array>
+
+    <string-array name="tipe_grup_pengenalan_pemrograman">
+        <item>Sabtu</item>
+        <item>Minggu</item>
+    </string-array>
+
+    <string-array name="tipe_grup">
+        <item>Selasa</item>
+        <item>Rabu</item>
+        <item>Kamis</item>
+        <item>jumat</item>
+    </string-array>
+
+    <string-array name="tipe_private">
+        <item>Selasa</item>
+        <item>Rabu</item>
+        <item>Kamis</item>
+        <item>jumat</item>
+    </string-array>
+
+    <string-array name="jumlah_kehadiran_pp">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+
+    <string-array name="jumlah_kehadiran_grup">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+    </string-array>
+</resources>

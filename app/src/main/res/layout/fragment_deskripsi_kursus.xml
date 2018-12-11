@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".View.Fragment.DeskripsiKursus">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/image_kursus"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/common_google_signin_btn_icon_dark"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textColor="#FFC9BF01"
+                    android:textSize="20sp"
+                    android:text="Deskripsi Kursus"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="end|center">
+
+                    <Button
+                        android:id="@+id/pesan_sekarang"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:padding="5dp"
+                        android:background="@android:color/holo_blue_dark"
+                        android:textColor="@android:color/white"
+                        android:text="Pesan Sekarang >>"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/black"/>
+
+            <TextView
+                android:id="@+id/jenis_kursus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:text="Deskripsi Pemrograman xxxxxxxxxxx: "/>
+
+            <TextView
+                android:id="@+id/deskripsi_kursus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/notif_pembayaran"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:text="Harga : "/>
+
+            <TextView
+                android:id="@+id/harga_kursus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="Rp 600.000,-"/>
+
+            <TextView
+                android:id="@+id/harga_kursus_private"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textSize="15sp"
+                android:text="Rp 1.500.000,-"
+                android:visibility="gone"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:text="Lama Pertemuan : "/>
+
+            <TextView
+                android:id="@+id/lama_pertemuan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="02 jam/pertemuan"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:text="Banyak Pertemuan : "/>
+
+            <TextView
+                android:id="@+id/banyak_pertemuan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="16x pertemuan"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

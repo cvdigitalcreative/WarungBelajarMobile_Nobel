@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "488987480360",
+    "firebase_url": "https://warungbelajar-81026.firebaseio.com",
+    "project_id": "warungbelajar-81026",
+    "storage_bucket": "warungbelajar-81026.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488987480360:android:a8507bda319fe852",
+        "android_client_info": {
+          "package_name": "com.test.warungbelajaruser"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "488987480360-7o9dntjtoiijvgs9uh9opuj2n4dsjehb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.test.warungbelajaruser",
+            "certificate_hash": "3d2d637db19c48e7569e8fb0bfd4db856ff439a8"
+          }
+        },
+        {
+          "client_id": "488987480360-1kgbcg7ibltkc15stqbvf6j1cftqt17r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUNHDeaIVt9aGTSa8MsVk9w9cfhBX-LO4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488987480360-1kgbcg7ibltkc15stqbvf6j1cftqt17r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
