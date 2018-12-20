@@ -27,9 +27,6 @@ public class DaftarKursusAdapter extends RecyclerView.Adapter<DaftarKursusAdapte
         this.kursus_list = kursus_list;
         this.manager = manager;
         this.UID = UID;
-
-        System.out.println("Ini Constructor");
-        System.out.println("ukuran list : "+kursus_list.size());
     }
 
     @NonNull

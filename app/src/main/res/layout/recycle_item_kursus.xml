@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="20sp"
-            android:textColor="#FFC9BF01"
+            android:textColor="@color/colorPrimaryDark"
             android:text="Nama Kursus"/>
 
         <TextView
@@ -45,16 +45,33 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="end"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <Button
-                android:id="@+id/konfirmasi"
+                android:id="@+id/detail_konfirmasi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Konfirmasi Pembayaran"
+                android:gravity="center_vertical"
+                android:text="Lihat Detail"
                 android:padding="10dp"
-                android:background="@color/colorPrimaryDark"
+                android:background="@android:color/holo_blue_dark"
                 android:textColor="@android:color/white"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:gravity="end">
+
+                <Button
+                    android:id="@+id/konfirmasi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Konfirmasi Pembayaran"
+                    android:padding="10dp"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@android:color/white"/>
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
@@ -72,7 +89,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="20sp"
-            android:textColor="#FFC9BF01"
+            android:textColor="@color/colorPrimaryDark"
             android:text="Nama Kursus"/>
 
         <TextView
@@ -177,7 +194,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="20sp"
-            android:textColor="#FFC9BF01"
+            android:textColor="@color/colorPrimaryDark"
             android:text="Nama Kursus"/>
 
         <TextView

@@ -24,12 +24,22 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 import com.test.warungbelajaruser.Model.Nobel;
 import com.test.warungbelajaruser.R;
 
@@ -43,6 +53,7 @@ public class Register extends AppCompatActivity {
     private Button btn_register;
     private FirebaseAuth mAuth;
     private DatabaseReference ref;
+    private StorageReference storageRef, mStorageRef;
     private String nama, email, no_hp;
     private Bitmap bitmap;
     private Uri uri;
@@ -60,28 +71,28 @@ public class Register extends AppCompatActivity {
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nama = et_email.getText().toString();
+                nama = et_nama.getText().toString();
                 email = et_email.getText().toString();
                 no_hp = et_no_hp.getText().toString();
                 String password = et_password.getText().toString();
 
                 if(nama.isEmpty()){
-                    Toast.makeText(getApplicationContext(), "nama anda belum diisi", Toast.LENGTH_SHORT);
+                    Toast.makeText(getApplicationContext(), "nama anda belum diisi", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if(email.isEmpty()){
-                    Toast.makeText(getApplicationContext(), "email anda belum diisi", Toast.LENGTH_SHORT);
+                    Toast.makeText(getApplicationContext(), "email anda belum diisi", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if(no_hp.isEmpty()){
-                    Toast.makeText(getApplicationContext(), "no.hp anda belum diisi", Toast.LENGTH_SHORT);
+                    Toast.makeText(getApplicationContext(), "no.hp anda belum diisi", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if(password.isEmpty()){
-                    Toast.makeText(getApplicationContext(), "password anda belum diisi", Toast.LENGTH_SHORT);
+                    Toast.makeText(getApplicationContext(), "password anda belum diisi", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -90,19 +101,56 @@ public class Register extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if(task.isSuccessful()){
-                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    final FirebaseUser user = mAuth.getCurrentUser();
 
-                                    String qr_file = "qr_code_"+user.getUid();
-                                    bitmap = TextToImageEncode(user.getUid());
+                                    final String qr_file = "qr_code_"+user.getUid();
+
+                                    try {
+                                        bitmap = TextToImageEncode(user.getUid());
+                                    } catch (WriterException e) {
+                                        e.printStackTrace();
+                                    }
+
                                     saveImage(bitmap, qr_file);
                                     uri = getImageUri(bitmap);
 
-                                    Nobel nobel = new Nobel(nama, email, no_hp);
+                                    storageRef = mStorageRef.child("qr_code_images/").child(qr_file);
+                                    storageRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                                    ref.child(user.getUid()).child("informasi_nobel").setValue(nobel);
+                                            Toast.makeText(getApplicationContext().getApplicationContext(), "QR Code Berhasil Diupload" , Toast.LENGTH_SHORT).show();
 
-                                    Intent intent = new Intent(Register.this, Login.class);
-                                    startActivity(intent);
+                                            storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                @Override
+                                                public void onSuccess(Uri uri_database) {
+                                                    Toast.makeText(getApplicationContext().getApplicationContext(), "Data Nobel Berhasil Disimpan" , Toast.LENGTH_SHORT).show();
+                                                    Nobel nobel = new Nobel(nama, email, no_hp, uri_database.toString(), qr_file);
+
+                                                    ref.child(user.getUid()).child("profile_nobel").setValue(nobel);
+
+                                                    Intent intent = new Intent(Register.this, Login.class);
+                                                    startActivity(intent);
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(getApplicationContext().getApplicationContext(), "Data Nobel Gagal Disimpan" , Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+
+                                        }
+                                    }) .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                        }
+                                    }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+                                        }
+                                    });
                                 }
                             }
                         });
@@ -117,7 +165,9 @@ public class Register extends AppCompatActivity {
         et_password = findViewById(R.id.kata_sandi);
         btn_register = findViewById(R.id.btn_register);
         mAuth = FirebaseAuth.getInstance();
+
         ref = FirebaseDatabase.getInstance().getReference("nobel");
+        mStorageRef = FirebaseStorage.getInstance().getReference();
     }
 
     public Bitmap TextToImageEncode(String Value) throws WriterException {
@@ -179,6 +229,7 @@ public class Register extends AppCompatActivity {
                         }
                     }
             );
+
         } catch (Exception e) {
             e.getMessage();
         }
@@ -197,37 +248,31 @@ public class Register extends AppCompatActivity {
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
-    public boolean checkPermissionREAD_EXTERNAL_STORAGE(
-            final Context context) {
+    public boolean checkPermissionREAD_EXTERNAL_STORAGE(final Context context) {
         int currentAPIVersion = Build.VERSION.SDK_INT;
         if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(context,
-                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(
-                        (Activity) context,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    showDialog("External storage", context,
-                            Manifest.permission.READ_EXTERNAL_STORAGE);
-
-                } else {
-                    ActivityCompat
-                            .requestPermissions(
-                                    (Activity) context,
-                                    new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
-                                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context,Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    showDialog("External storage", context,Manifest.permission.READ_EXTERNAL_STORAGE);
                 }
+                else{
+                    ActivityCompat.requestPermissions((Activity) context,
+                            new String[] {Manifest.permission.READ_EXTERNAL_STORAGE },
+                            MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                }
+
                 return false;
-            } else {
+            }
+            else{
                 return true;
             }
-
-        } else {
+        }
+        else{
             return true;
         }
     }
 
-    public void showDialog(final String msg, final Context context,
-                           final String permission) {
+    public void showDialog(final String msg, final Context context,final String permission) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
         alertBuilder.setCancelable(true);
         alertBuilder.setTitle("Permission necessary");
@@ -245,20 +290,19 @@ public class Register extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // do your stuff
-                } else {
-                    Toast.makeText(getApplicationContext(), "GET_ACCOUNTS Denied",
-                            Toast.LENGTH_SHORT).show();
                 }
+                else{
+                    Toast.makeText(getApplicationContext(), "GET_ACCOUNTS Denied", Toast.LENGTH_SHORT).show();
+                }
+
                 break;
             default:
-                super.onRequestPermissionsResult(requestCode, permissions,
-                        grantResults);
+                super.onRequestPermissionsResult(requestCode, permissions,grantResults);
         }
     }
 }

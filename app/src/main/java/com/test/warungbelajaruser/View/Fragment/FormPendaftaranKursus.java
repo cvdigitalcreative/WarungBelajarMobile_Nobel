@@ -137,6 +137,7 @@ public class FormPendaftaranKursus extends Fragment {
                     ref.child("nobel").child(UID).child("kursus").child(jenis_kursus).child("materi").child(String.valueOf(materi_list.get(i).getPertemuan())).child("status").setValue(materi_list.get(i).getStatus());
                     ref.child("nobel").child(UID).child("kursus").child(jenis_kursus).child("materi").child(String.valueOf(materi_list.get(i).getPertemuan())).child("tema_materi").setValue(materi_list.get(i).getMateri());
                     ref.child("nobel").child(UID).child("kursus").child(jenis_kursus).child("materi").child(String.valueOf(materi_list.get(i).getPertemuan())).child("url_modul").setValue(materi_list.get(i).getUrl_materi());
+                    ref.child("nobel").child(UID).child("kursus").child(jenis_kursus).child("materi").child(String.valueOf(materi_list.get(i).getPertemuan())).child("nama_modul").setValue(materi_list.get(i).getNama_modul());
                 }
 
                 for(int i=0; i<absensi.length; i++){
@@ -452,8 +453,9 @@ public class FormPendaftaranKursus extends Fragment {
                     String status = materiSnapshot.child("status").getValue().toString();
                     String tema_materi = materiSnapshot.child("tema_materi").getValue().toString();
                     String url = materiSnapshot.child("url_modul").getValue().toString();
+                    String nama_modul = materiSnapshot.child("nama_modul").getValue().toString();
 
-                    Materi materi = new Materi(pertemuan, tema_materi, url, status);
+                    Materi materi = new Materi(pertemuan, tema_materi, url, status, nama_modul);
                     materi_list.add(materi);
                 }
             }

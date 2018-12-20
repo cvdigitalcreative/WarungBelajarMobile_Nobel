@@ -66,7 +66,8 @@ public class CatatanKursusAdapter extends RecyclerView.Adapter<CatatanKursusAdap
 
     @Override
     public void onBindViewHolder(@NonNull final CatatanKursusHolder catatanKursusHolder, final int i) {
-        if(kursus_list.get(i).getStatus().equals("Menunggu Pembayaran") || kursus_list.get(i).getStatus().equals("Menunggu Konfirmasi")){
+        if(kursus_list.get(i).getStatus().equals("Menunggu Pembayaran") || kursus_list.get(i).getStatus().equals("Menunggu Konfirmasi") || kursus_list.get(i).getStatus().equals("Menunggu Penjadwalan")){
+
             if(kuota.get(i) != 0 && kuota_sesi1.get(i) != 0 && kuota_sesi2.get(i) != 0){
                 catatanKursusHolder.ll_sebelum_pembayaran.setVisibility(View.VISIBLE);
             }
@@ -77,9 +78,102 @@ public class CatatanKursusAdapter extends RecyclerView.Adapter<CatatanKursusAdap
             catatanKursusHolder.ll_kursus_berjalan.setVisibility(View.GONE);
             catatanKursusHolder.ll_kursus_selesai.setVisibility(View.GONE);
 
-            catatanKursusHolder.tv_nama_sp_kursus.setText(kursus_list.get(i).getJenis_kursus());
+            if(kursus_list.get(i).getJenis_kursus().equals("pengenalan_pemrograman")){
+                catatanKursusHolder.tv_nama_sp_kursus.setText("Pengenalan Pemrograman");
+            }
+            else if(kursus_list.get(i).getJenis_kursus().equals("pemrograman_dekstop")){
+                catatanKursusHolder.tv_nama_sp_kursus.setText("Pemrograman Dektop");
+            }
+            else if(kursus_list.get(i).getJenis_kursus().equals("pemrograman_mobile")){
+                catatanKursusHolder.tv_nama_sp_kursus.setText("Pemrograman Mobile");
+            }
+            else{
+                catatanKursusHolder.tv_nama_sp_kursus.setText("Pengenalan Website");
+            }
 
             if(kursus_list.get(i).getStatus().equals("Menunggu Pembayaran")){
+                catatanKursusHolder.btn_lihat_detail.setVisibility(View.VISIBLE);
+                catatanKursusHolder.btn_lihat_detail.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
+                        LayoutInflater layoutInflater = activity.getLayoutInflater();
+                        View mView = layoutInflater.inflate(R.layout.modal_lihat_detail_konfirmasi, null);
+
+                        final TextView tvDetailPembayaran = mView.findViewById(R.id.detail_pembayaran);
+                        final Button btnOkPembayaran = mView.findViewById(R.id.btn_ok_pembayaran);
+
+                        mBuilder.setView(mView);
+                        final AlertDialog dialog = mBuilder.create();
+
+                        ref = FirebaseDatabase.getInstance().getReference("nobel");
+                        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String UID =  kursus_list.get(i).getUID();
+                                String jenis_kursus = kursus_list.get(i).getJenis_kursus();
+
+                                String harga = givePointString(dataSnapshot.child(UID).child("kursus").child(jenis_kursus).child("informasi_dasar").child("harga").getValue().toString());
+                                String notif_baru = "Silahkan Melakukan Pembayaran Sebesar Rp "+harga+",00. Ke Rekening BCA 6175028238 A/n Muhammad Malian Zikri Bukti Pembayaran Harap Dikirimkan ke WA 08117199210";
+                                tvDetailPembayaran.setText(notif_baru);
+
+                                dialog.show();
+                                dialog.setCanceledOnTouchOutside(false);
+
+                                btnOkPembayaran.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
+                    public String givePointString(String harga){
+                        String harga_baru = "";
+
+                        if(harga.length() <= 6){
+                            int count=0;
+                            int point_indeks = harga.length()-4;
+
+                            for(int i=0; i<harga.length(); i++){
+                                if(count == point_indeks){
+                                    harga_baru += String.valueOf(harga.charAt(i))+".";
+                                    count++;
+                                }
+                                else{
+                                    harga_baru += String.valueOf(harga.charAt(i));
+                                    count++;
+                                }
+                            }
+                        }
+                        else if(harga.length() > 6 && harga.length() <= 9){
+                            int count=0;
+                            int point_indeks1 = harga.length()-7;
+                            int point_indeks2 = harga.length()-4;
+
+                            for(int i=0; i<harga.length(); i++){
+                                if(count == point_indeks1 || count == point_indeks2){
+                                    harga_baru += String.valueOf(harga.charAt(i))+".";
+                                    count++;
+                                }
+                                else{
+                                    harga_baru += String.valueOf(harga.charAt(i));
+                                    count++;
+                                }
+                            }
+                        }
+
+                        return  harga_baru;
+                    }
+                });
+
                 catatanKursusHolder.btn_konfirmasi.setVisibility(View.VISIBLE);
                 catatanKursusHolder.btn_konfirmasi.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -126,51 +220,65 @@ public class CatatanKursusAdapter extends RecyclerView.Adapter<CatatanKursusAdap
                                     storageRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                         @Override
                                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                            int harga_dibayar = Integer.parseInt(etJumlahDuit.getText().toString());
+                                            final int harga_dibayar = Integer.parseInt(etJumlahDuit.getText().toString());
 
                                             if(etJumlahDuit.getText().toString().equals("0")){
-                                                Toast.makeText(activity.getApplicationContext(), "Maaf, jumlah harga harus diisi", Toast.LENGTH_SHORT);
+                                                Toast.makeText(activity.getApplicationContext(), "Maaf, jumlah harga harus diisi", Toast.LENGTH_SHORT).show();
                                                 return;
                                             }
 
                                             if(harga_dibayar < kursus_list.get(i).getHarga()){
-                                                Toast.makeText(activity.getApplicationContext(), "Maaf, harga yang dibayar kurang dari ketentuan", Toast.LENGTH_SHORT);
+                                                Toast.makeText(activity.getApplicationContext(), "Maaf, harga yang dibayar kurang dari ketentuan", Toast.LENGTH_SHORT).show();
                                                 return;
                                             }
 
-                                            String batch = String.valueOf(kursus_list.get(i).getBatch());
-                                            String paket = kursus_list.get(i).getPaket();
-                                            String hari1 = kursus_list.get(i).getCatatan_jadwal().getHari1();
-                                            String hari2 = kursus_list.get(i).getCatatan_jadwal().getHari2();
-                                            String sesi1 = kursus_list.get(i).getCatatan_jadwal().getSesi_pertama();
-                                            String sesi2 = kursus_list.get(i).getCatatan_jadwal().getSesi_kedua();
+                                            System.out.println("masuk");
+                                            storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                @Override
+                                                public void onSuccess(Uri uri_firebase) {
+                                                    String batch = String.valueOf(kursus_list.get(i).getBatch());
+                                                    String paket = kursus_list.get(i).getPaket();
+                                                    String hari1 = kursus_list.get(i).getCatatan_jadwal().getHari1();
+                                                    String hari2 = kursus_list.get(i).getCatatan_jadwal().getHari2();
+                                                    String sesi1 = kursus_list.get(i).getCatatan_jadwal().getSesi_pertama();
+                                                    String sesi2 = kursus_list.get(i).getCatatan_jadwal().getSesi_kedua();
 
-                                            ref = FirebaseDatabase.getInstance().getReference();
-                                            ref.child("nobel").child(kursus_list.get(i).getUID()).child("kursus").child(kursus_list.get(i).getJenis_kursus()).child("informasi_dasar").child("harga_dibayar").setValue(harga_dibayar);
-                                            ref.child("nobel").child(kursus_list.get(i).getUID()).child("kursus").child(kursus_list.get(i).getJenis_kursus()).child("informasi_dasar").child("status").setValue("Menunggu Konfirmasi");
+                                                    ref = FirebaseDatabase.getInstance().getReference();
+                                                    ref.child("nobel").child(kursus_list.get(i).getUID()).child("kursus").child(kursus_list.get(i).getJenis_kursus()).child("informasi_dasar").child("harga_dibayar").setValue(harga_dibayar);
+                                                    ref.child("nobel").child(kursus_list.get(i).getUID()).child("kursus").child(kursus_list.get(i).getJenis_kursus()).child("informasi_dasar").child("foto_bukti_pembayaran").setValue(uri_firebase.toString());
+                                                    ref.child("nobel").child(kursus_list.get(i).getUID()).child("kursus").child(kursus_list.get(i).getJenis_kursus()).child("informasi_dasar").child("status").setValue("Menunggu Konfirmasi");
 
-                                            ref.child("pendaftaran").child(kursus_list.get(i).getJenis_kursus()).child(batch).child(paket).child(hari1).child(sesi1).child("kuota_sesi").setValue(kuota_sesi1.get(i)-1);
-                                            ref.child("pendaftaran").child(kursus_list.get(i).getJenis_kursus()).child(batch).child(paket).child(hari2).child(sesi2).child("kuota_sesi").setValue(kuota_sesi2.get(i)-1);
+                                                    ref.child("pendaftaran").child(kursus_list.get(i).getJenis_kursus()).child(batch).child(paket).child(hari1).child(sesi1).child("kuota_sesi").setValue(kuota_sesi1.get(i)-1);
+                                                    ref.child("pendaftaran").child(kursus_list.get(i).getJenis_kursus()).child(batch).child(paket).child(hari2).child(sesi2).child("kuota_sesi").setValue(kuota_sesi2.get(i)-1);
 
-                                            if(paket.equals("private")){
-                                                ref.child("pendaftaran").child(kursus_list.get(i).getJenis_kursus()).child(batch).child("maks_kuota_private").setValue(kuota.get(i)-2);
-                                            }
-                                            else{
-                                                ref.child("pendaftaran").child(kursus_list.get(i).getJenis_kursus()).child(batch).child("maks_kuota_grup").setValue(kuota.get(i)-2);
-                                            }
+                                                    if(paket.equals("private")){
+                                                        ref.child("pendaftaran").child(kursus_list.get(i).getJenis_kursus()).child(batch).child("maks_kuota_private").setValue(kuota.get(i)-1);
+                                                    }
+                                                    else{
+                                                        ref.child("pendaftaran").child(kursus_list.get(i).getJenis_kursus()).child(batch).child("maks_kuota_grup").setValue(kuota.get(i)-1);
+                                                    }
 
-                                            catatanKursusHolder.btn_konfirmasi.setVisibility(View.GONE);
-                                            catatanKursusHolder.tv_notif_pembayaran.setText("Menunggu Konfirmasi");
+                                                    catatanKursusHolder.btn_konfirmasi.setVisibility(View.GONE);
+                                                    catatanKursusHolder.btn_lihat_detail.setVisibility(View.GONE);
+                                                    catatanKursusHolder.tv_notif_pembayaran.setText("Menunggu Konfirmasi");
 
-                                            dialog.dismiss();
+                                                    dialog.dismiss();
 
-                                            Toast.makeText(activity.getApplicationContext(), "Konfirmasi berhasil dilakukan!" , Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(activity.getApplicationContext(), "Konfirmasi berhasil dilakukan!" , Toast.LENGTH_SHORT).show();
+                                                }
+
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(activity.getApplicationContext(), "Konfirmasi gagal dilakukan!" , Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
                                         }
                                     })
                                             .addOnFailureListener(new OnFailureListener() {
                                                 @Override
                                                 public void onFailure(@NonNull Exception e) {
-                                                  Toast.makeText(activity.getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                  Toast.makeText(activity.getApplicationContext(), "Silahkan isi foto bukti pembayaran!", Toast.LENGTH_SHORT).show();
                                                 }
                                             })
                                             .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -190,6 +298,7 @@ public class CatatanKursusAdapter extends RecyclerView.Adapter<CatatanKursusAdap
             }
             else{
                 catatanKursusHolder.tv_notif_pembayaran.setText(kursus_list.get(i).getStatus());
+                catatanKursusHolder.btn_lihat_detail.setVisibility(View.GONE);
                 catatanKursusHolder.btn_konfirmasi.setVisibility(View.GONE);
             }
         }
@@ -259,7 +368,7 @@ public class CatatanKursusAdapter extends RecyclerView.Adapter<CatatanKursusAdap
 
                             String key = ref.child(kursus_list.get(i).getUID()).push().getKey();
 
-                            ref.child(kursus_list.get(i).getUID()).child(key).setValue(review);
+                            ref.child(kursus_list.get(i).getUID()).child("review").child(key).setValue(review);
 
                             dialog.dismiss();
                         }
@@ -296,6 +405,7 @@ public class CatatanKursusAdapter extends RecyclerView.Adapter<CatatanKursusAdap
         public TextView tv_mentor_kursus;
         public TextView tv_nama_ks_kursus;
 
+        public Button btn_lihat_detail;
         public Button btn_konfirmasi;
         public Button btn_review;
 
@@ -316,6 +426,7 @@ public class CatatanKursusAdapter extends RecyclerView.Adapter<CatatanKursusAdap
             tv_mentor_kursus = itemView.findViewById(R.id.mentor_kursus);
             tv_nama_ks_kursus = itemView.findViewById(R.id.nama_ks_kursus);
 
+            btn_lihat_detail = itemView.findViewById(R.id.detail_konfirmasi);
             btn_konfirmasi = itemView.findViewById(R.id.konfirmasi);
             btn_review = itemView.findViewById(R.id.review);
         }

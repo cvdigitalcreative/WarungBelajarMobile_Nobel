@@ -73,8 +73,9 @@ public class CatatanMateriKursus extends Fragment {
                     String status = absensiSnapshot.child("status").getValue().toString();
                     String tema_materi = absensiSnapshot.child("tema_materi").getValue().toString();
                     String url_modul = absensiSnapshot.child("url_modul").getValue().toString();
+                    String nama_modul = absensiSnapshot.child("nama_modul").getValue().toString();
 
-                    Materi materi = new Materi(pertemuan, tema_materi, url_modul, status);
+                    Materi materi = new Materi(pertemuan, tema_materi, url_modul, status, nama_modul);
                     materi_list.add(materi);
                 }
 
@@ -105,37 +106,30 @@ public class CatatanMateriKursus extends Fragment {
 
     public static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 123;
 
-    public boolean checkPermissionWRITE_EXTERNAL_STORAGE(
-            final Context context) {
+    public boolean checkPermissionWRITE_EXTERNAL_STORAGE(final Context context) {
         int currentAPIVersion = Build.VERSION.SDK_INT;
         if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(context,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(
-                        (Activity) context,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    showDialog("External storage", context,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-                } else {
-                    ActivityCompat
-                            .requestPermissions(
-                                    (Activity) context,
-                                    new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE },
-                                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context,Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    showDialog("External storage", context,Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                }
+                else{
+                    ActivityCompat.requestPermissions((Activity) context, new String[] {
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
                 }
                 return false;
-            } else {
+            }
+            else{
                 return true;
             }
-
-        } else {
+        }
+        else{
             return true;
         }
     }
 
-    public void showDialog(final String msg, final Context context,
-                           final String permission) {
+    public void showDialog(final String msg, final Context context,final String permission) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
         alertBuilder.setCancelable(true);
         alertBuilder.setTitle("Permission necessary");
@@ -171,6 +165,6 @@ public class CatatanMateriKursus extends Fragment {
     }
 
     public void notif(String pesan){
-        Toast.makeText(getContext(), pesan, Toast.LENGTH_SHORT);
+        Toast.makeText(getContext(), pesan, Toast.LENGTH_SHORT).show();
     }
 }

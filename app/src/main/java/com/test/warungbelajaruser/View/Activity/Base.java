@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.test.warungbelajaruser.Model.Kursus;
 import com.test.warungbelajaruser.R;
 import com.test.warungbelajaruser.View.Fragment.CatatanKursus;
 
 public class Base extends AppCompatActivity {
+    private FirebaseAuth mAuth;
     private Button btnCatatanKursus, btnKursus, btnProfile, btnLogout;
     private String UID;
 
@@ -47,6 +49,7 @@ public class Base extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Base.this, Profile.class);
+                intent.putExtra("UID", UID);
                 startActivity(intent);
             }
         });
@@ -54,6 +57,8 @@ public class Base extends AppCompatActivity {
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mAuth.signOut();
+
                 Intent intent = new Intent(Base.this, Login.class);
                 startActivity(intent);
             }
@@ -69,5 +74,7 @@ public class Base extends AppCompatActivity {
         btnKursus = findViewById(R.id.btn_kursus);
         btnProfile = findViewById(R.id.btn_profile);
         btnLogout = findViewById(R.id.btn_Logout);
+
+        mAuth = FirebaseAuth.getInstance();
     }
 }

@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +24,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.test.warungbelajaruser.Model.Materi;
 import com.test.warungbelajaruser.R;
 import com.test.warungbelajaruser.View.Fragment.CatatanMateriKursus;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class CatatanMateriAdapter extends RecyclerView.Adapter<CatatanMateriAdapter.CatatanMateriHolder>{
@@ -69,8 +76,6 @@ public class CatatanMateriAdapter extends RecyclerView.Adapter<CatatanMateriAdap
 
                     if(materi_list.get(i).getUrl_materi().equals("-")){
                         catatan_materi.notif("modul belum ditambahkan");
-                        System.out.println("modul belum ditambahkan");
-                        Toast.makeText(activity.getApplicationContext(), "Modul belum ditambahkan", Toast.LENGTH_SHORT);
                     }
                     else{
                         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -83,40 +88,57 @@ public class CatatanMateriAdapter extends RecyclerView.Adapter<CatatanMateriAdap
             catatanMateriHolder.btn_unduh_modul.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    CatatanMateriKursus catatan_materi = (CatatanMateriKursus) activity.getSupportFragmentManager().findFragmentByTag("catatan_materi");
+                    StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(materi_list.get(i).getUrl_materi());
+
+                    final CatatanMateriKursus catatan_materi = (CatatanMateriKursus) activity.getSupportFragmentManager().findFragmentByTag("catatan_materi");
 
                     if(materi_list.get(i).getUrl_materi().equals("-")){
-                        System.out.println("modul belum ditambahkan");
                         catatan_materi.notif("modul belum ditambahkan");
-                        Toast.makeText(activity.getApplicationContext(), "Modul belum ditambahkan", Toast.LENGTH_SHORT);
                     }
                     else{
                         if (catatan_materi.checkPermissionWRITE_EXTERNAL_STORAGE(activity.getApplicationContext())) {
-                            File direct = new File(Environment.getExternalStorageDirectory()
-                                    + "/kursus_files");
+                            System.out.println("masuk 1");
+                            final File file = new File(activity.getApplicationContext().getExternalFilesDir(null), materi_list.get(i).getNama_modul());
 
-                            if (!direct.exists()) {
-                                direct.mkdirs();
+                            if (!file.exists()) {
+                                System.out.println("masuk 2");
+                                storageRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                        Log.e("SUCCEED", "Modul Berhasil di Download" +file.toString());
+                                        catatan_materi.notif("Modul Berhasil di Download");
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        // Handle any errors
+                                        Log.e("Failed", "Modul Gagal di Download" +file.toString()+" "+exception.getLocalizedMessage());
+                                        catatan_materi.notif("Modul Gagal di Download");
+                                    }
+                                });
                             }
+                            else{
+                                System.out.println("masuk 3");
+                                file.delete();
 
-                            DownloadManager mgr = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
-
-                            Uri downloadUri = Uri.parse(materi_list.get(i).getUrl_materi());
-                            DownloadManager.Request request = new DownloadManager.Request(downloadUri);
-
-                            request.allowScanningByMediaScanner();
-                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                            request.setAllowedNetworkTypes(
-                                    DownloadManager.Request.NETWORK_WIFI
-                                            | DownloadManager.Request.NETWORK_MOBILE)
-                                    .setAllowedOverRoaming(false).setTitle(materi_list.get(i).getMateri())
-                                    .setDescription("Download in Progress")
-                                    .setDestinationInExternalPublicDir("/kursus_files", materi_list.get(i).getMateri()+".pdf");
-
-                            mgr.enqueue(request);
+                                storageRef.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                        Log.e("SUCCEED", "Data Berhasil di Download" +file.toString());
+                                        catatan_materi.notif("Modul Berhasil di Download");
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        // Handle any errors
+                                        Log.e("Failed", "Data Gagal di Download" +file.toString()+" "+exception.getLocalizedMessage());
+                                        catatan_materi.notif("Modul Gagal di Download");
+                                    }
+                                });
+                            }
                         }
                         else{
-                            Toast.makeText(activity.getApplicationContext(), "Modul gagal diunduh", Toast.LENGTH_SHORT);
+                            catatan_materi.notif("Modul Gagal di Download");
                         }
                     }
                 }

@@ -10,6 +10,7 @@ public class Kursus {
     private String mentor;
     private String paket;
     private String tanggal_batch;
+    private String foto_bukti_pembayaran;
     private int batch;
     private int harga;
     private int harga_dibayar;
@@ -22,22 +23,6 @@ public class Kursus {
     private ArrayList<Materi> catatan_materi;
 
     public Kursus() {
-    }
-
-    public Kursus(String status, String ruangan, String mentor, String paket, String tanggal_batch, int batch, int harga, int harga_dibayar, String UID, String jenis_kursus, Jadwal catatan_jadwal, ArrayList<Absensi> catatan_absensi, ArrayList<Materi> catatan_materi) {
-        this.status = status;
-        this.ruangan = ruangan;
-        this.mentor = mentor;
-        this.paket = paket;
-        this.tanggal_batch = tanggal_batch;
-        this.batch = batch;
-        this.harga = harga;
-        this.harga_dibayar = harga_dibayar;
-        this.UID = UID;
-        this.jenis_kursus = jenis_kursus;
-        this.catatan_jadwal = catatan_jadwal;
-        this.catatan_absensi = catatan_absensi;
-        this.catatan_materi = catatan_materi;
     }
 
     public String getStatus() {
@@ -142,5 +127,13 @@ public class Kursus {
 
     public void setJenis_kursus(String jenis_kursus) {
         this.jenis_kursus = jenis_kursus;
+    }
+
+    public String getFoto_bukti_pembayaran() {
+        return foto_bukti_pembayaran;
+    }
+
+    public void setFoto_bukti_pembayaran(String foto_bukti_pembayaran) {
+        this.foto_bukti_pembayaran = foto_bukti_pembayaran;
     }
 }
